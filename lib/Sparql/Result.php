@@ -62,7 +62,7 @@ class Result extends \ArrayIterator
      * object directly - it will be constructed automatically
      * for you by EasyRdf\Sparql\_Client.
      *
-     * @param string $data     The SPARQL result body
+     * @param string $data The SPARQL result body
      * @param string $mimeType The MIME type of the result
      *
      * @throws \EasyRdf\Exception
@@ -155,7 +155,7 @@ class Result extends \ArrayIterator
      * This method is intended to be a debugging aid and will
      * return a pretty-print view of the query result.
      *
-     * @param  string  $format  Either 'text' or 'html'
+     * @param  string $format Either 'text' or 'html'
      *
      * @throws Exception
      * @return string
@@ -168,18 +168,18 @@ class Result extends \ArrayIterator
                 $result .= "<table class='sparql-results' style='border-collapse:collapse'>";
                 $result .= "<tr>";
                 foreach ($this->fields as $field) {
-                    $result .= "<th style='border:solid 1px #000;padding:4px;".
-                               "vertical-align:top;background-color:#eee;'>".
-                               "?$field</th>";
+                    $result .= "<th style='border:solid 1px #000;padding:4px;" .
+                        "vertical-align:top;background-color:#eee;'>" .
+                        "?$field</th>";
                 }
                 $result .= "</tr>";
                 foreach ($this as $row) {
                     $result .= "<tr>";
                     foreach ($this->fields as $field) {
                         if (isset($row->$field)) {
-                            $result .= "<td style='border:solid 1px #000;padding:4px;".
-                                       "vertical-align:top'>".
-                                       $row->$field->dumpValue($format)."</td>";
+                            $result .= "<td style='border:solid 1px #000;padding:4px;" .
+                                "vertical-align:top'>" .
+                                $row->$field->dumpValue($format) . "</td>";
                         } else {
                             $result .= "<td>&nbsp;</td>";
                         }
@@ -210,13 +210,13 @@ class Result extends \ArrayIterator
                 // Create a horizontal rule
                 $hr = "+";
                 foreach ($colWidths as $v) {
-                    $hr .= "-".str_repeat('-', $v).'-+';
+                    $hr .= "-" . str_repeat('-', $v) . '-+';
                 }
 
                 // Output the field names
                 $result .= "$hr\n|";
                 foreach ($this->fields as $field) {
-                    $result .= ' '.str_pad("?$field", $colWidths[$field]).' |';
+                    $result .= ' ' . str_pad("?$field", $colWidths[$field]) . ' |';
                 }
 
                 // Output each of the rows
@@ -224,13 +224,14 @@ class Result extends \ArrayIterator
                 foreach ($textData as $textRow) {
                     $result .= '|';
                     foreach ($textRow as $k => $v) {
-                        $result .= ' '.str_pad($v, $colWidths[$k]).' |';
+                        $result .= ' ' . str_pad($v, $colWidths[$k]) . ' |';
                     }
                     $result .= "\n";
                 }
                 $result .= "$hr\n";
 
             }
+
             return $result;
         } elseif ($this->type == 'boolean') {
             $str = ($this->boolean ? 'true' : 'false');
@@ -241,7 +242,7 @@ class Result extends \ArrayIterator
             }
         } else {
             throw new Exception(
-                "Failed to dump SPARQL Query Results format, unknown type: ". $this->type
+                "Failed to dump SPARQL Query Results format, unknown type: " . $this->type
             );
         }
     }
@@ -253,9 +254,9 @@ class Result extends \ArrayIterator
      */
     protected function newTerm($data)
     {
-        switch($data['type']) {
+        switch ($data['type']) {
             case 'bnode':
-                return new Resource('_:'.$data['value']);
+                return new Resource('_:' . $data['value']);
             case 'uri':
                 return new Resource($data['value']);
             case 'literal':
@@ -263,7 +264,7 @@ class Result extends \ArrayIterator
                 return Literal::create($data);
             default:
                 throw new Exception(
-                    "Failed to parse SPARQL Query Results format, unknown term type: ".
+                    "Failed to parse SPARQL Query Results format, unknown term type: " .
                     $data['type']
                 );
         }
@@ -276,13 +277,16 @@ class Result extends \ArrayIterator
     protected function parseXml($data)
     {
         $doc = new \DOMDocument();
+        //xml version 1.1 not supported
+        $data = str_replace("xml version=\"1.1\"", "xml version=\"1.0\"", $data);
         $doc->loadXML($data);
 
         # Check for valid root node.
         if ($doc->hasChildNodes() == false or
             $doc->childNodes->length != 1 or
             $doc->firstChild->nodeName != 'sparql' or
-            $doc->firstChild->namespaceURI != self::SPARQL_XML_RESULTS_NS) {
+            $doc->firstChild->namespaceURI != self::SPARQL_XML_RESULTS_NS
+        ) {
             throw new Exception(
                 "Incorrect root node in SPARQL XML Query Results format"
             );
@@ -294,6 +298,7 @@ class Result extends \ArrayIterator
             $this->type = 'boolean';
             $value = $boolean->item(0)->nodeValue;
             $this->boolean = $value == 'true' ? true : false;
+
             return;
         }
 
@@ -333,6 +338,7 @@ class Result extends \ArrayIterator
                 }
                 $this[] = $t;
             }
+
             return;
         }
 
