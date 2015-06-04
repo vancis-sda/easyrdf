@@ -197,8 +197,10 @@ class Client
         if ($value === null || $value === false) {
             unset($this->headers[$normalizedName]);
         } else {
-            // Else, set the header
-            $this->headers[$normalizedName] = array($name, $value);
+            // cumulus always returns first Accept Header but response is always 'application/sparql-results+xml'
+            if ($normalizedName = 'application/sparql-results+xml') {
+                $this->headers[$normalizedName] = array($name, 'application/sparql-results+xml');
+            }
         }
 
         return $this;
